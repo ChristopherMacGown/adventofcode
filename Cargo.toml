@@ -1,0 +1,12 @@
+[package]
+name = "adventofcode"
+version = "0.1.0"
+authors = ["Christopher MacGown <chris@glassbear.com>"]
+
+[dependencies]
+bindata = "0.1.1"
+bindata-impl = "0.1.0"
+levenshtein = "1.0.3"
+nalgebra = "0.16"
+reqwest = "0.9.5"
+spade = "1.6"
