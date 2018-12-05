@@ -5,13 +5,13 @@ const INPUT: &'static str = "https://adventofcode.com/2018/day/5/input";
 
 fn char_matcher(ch: char) -> char {
     if ch.is_uppercase() {
-        ch.to_lowercase().next()
+        ch.to_ascii_lowercase()
     } else {
-        ch.to_uppercase().next()
-    }.unwrap()
+        ch.to_ascii_uppercase()
+    }
 }
 
-fn parse_polymer<I: Into<String>>(input: I) -> String {
+fn parse_polymer<I: Iterator<Item = char>>(input: I) -> String {
     fn remove_adjacent<I: Iterator<Item = char>>(
         ch: char,
         input: &mut Peekable<I>,
@@ -31,8 +31,7 @@ fn parse_polymer<I: Into<String>>(input: I) -> String {
         None
     }
 
-    let input = input.into();
-    let mut iter = input.chars().peekable();
+    let mut iter = input.peekable();
     let mut output = Vec::new();
     while let Some(&ch) = iter.peek() {
         iter.next();
@@ -46,34 +45,32 @@ fn parse_polymer<I: Into<String>>(input: I) -> String {
 
 fn process<I: Into<String>>(input: I) -> String {
     let mut input = input.into();
-    let mut previous = input.clone();
+    let mut prev_len = input.len();
 
     loop {
-        input = parse_polymer(input);
-        if input == previous {
+        input = parse_polymer(input.chars());
+        let len = input.len();
+        if len == prev_len {
             break;
         }
-        previous = input.clone();
+        prev_len = len;
     }
 
     input
 }
 
-fn clean_and_process<I: Into<String>>(input: I) -> usize {
-    let input = input.into();
-    let mut unique_units: Vec<char> = input.clone().to_lowercase().chars().collect();
+const UNITS: [char; 26] = [
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+    't', 'u', 'v', 'w', 'x', 'y', 'z',
+];
 
-    unique_units.sort();
-    unique_units.dedup();
-
-    unique_units
-        .into_iter()
-        .map(|c| (c, char_matcher(c)))
-        .map(|(l, u)| {
+fn clean_and_process(input: String) -> usize {
+    UNITS
+        .iter()
+        .map(|&u| {
             let i = input
-                .clone()
                 .chars()
-                .filter(|&x| x != l && x != u)
+                .filter(|&x| x.to_ascii_lowercase() != u)
                 .collect::<String>();
             process(i).len()
         }).min()
@@ -82,14 +79,15 @@ fn clean_and_process<I: Into<String>>(input: I) -> usize {
 
 pub fn run() -> Result<(), Error> {
     let input = get(INPUT)?.text()?;
+    let input = input.trim_end();
 
     println!("{}", process("aA"));
     println!("{}", process("abBA"));
     println!("{}", process("abAB"));
     println!("{}", process("aabAAB"));
     println!("{}", process("dabAcCaCBAcCcaDA"));
-    println!("I: {}", process(input.trim_end()).len());
-    println!("II: {}", clean_and_process(input.trim_end()));
+    println!("I: {}", process(input).len());
+    println!("II: {}", clean_and_process(process(input)));
 
     Ok(())
 }
