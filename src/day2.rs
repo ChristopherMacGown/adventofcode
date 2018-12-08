@@ -3,8 +3,6 @@ use request::{get, Error};
 use std::collections::HashMap;
 use std::str;
 
-const INPUT: &'static str = "https://adventofcode.com/2018/day/2/input";
-
 fn count_seen_characters(barcode: &str) -> HashMap<char, usize> {
     let mut seen = HashMap::new();
 
@@ -64,8 +62,8 @@ fn find_levenshtein(list: &str) -> String {
     "FOO".to_string()
 }
 
-pub fn run() -> Result<(), Error> {
-    let boxes = get(INPUT)?.text()?;
+pub fn run(input: &str) -> Result<(), Error> {
+    let boxes = get(input)?.text()?;
 
     println!("CHECKSUM: {}", checksum(&boxes));
     println!("LEVENSHTEIN: {}", find_levenshtein(&boxes));

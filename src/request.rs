@@ -1,8 +1,10 @@
 use assets;
+use failure;
 use reqwest::{header, Client};
+
 use std::str;
 
-pub use reqwest::Error;
+pub type Error = failure::Error;
 
 pub fn get<T: reqwest::IntoUrl>(url: T) -> reqwest::Result<reqwest::Response> {
     let cookie = assets::get("session.cookie").unwrap();

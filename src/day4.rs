@@ -3,7 +3,6 @@ use counter::Counter;
 use request::{get, Error};
 use std::collections::HashMap;
 
-const INPUT: &'static str = "https://adventofcode.com/2018/day/4/input";
 const DATETIME_FORMAT: &'static str = "[%Y-%m-%d %H:%M";
 
 #[derive(Debug, Hash)]
@@ -41,8 +40,8 @@ impl Record {
     }
 }
 
-pub fn run() -> Result<(), Error> {
-    let schedule = get(INPUT)?.text()?;
+pub fn run(input: &str) -> Result<(), Error> {
+    let schedule = get(input)?.text()?;
     let mut schedule: Vec<Record> = schedule.lines().map(Record::from_str).collect();
     let mut sleeping: HashMap<usize, Counter<i64>> = HashMap::new();
 

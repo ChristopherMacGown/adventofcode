@@ -1,8 +1,6 @@
 use request::{get, Error};
 use std::iter::Peekable;
 
-const INPUT: &'static str = "https://adventofcode.com/2018/day/5/input";
-
 fn char_matcher(ch: char) -> char {
     if ch.is_uppercase() {
         ch.to_ascii_lowercase()
@@ -77,8 +75,8 @@ fn clean_and_process(input: String) -> usize {
         .unwrap()
 }
 
-pub fn run() -> Result<(), Error> {
-    let input = get(INPUT)?.text()?;
+pub fn run(input: &str) -> Result<(), Error> {
+    let input = get(input)?.text()?;
     let input = input.trim_end();
 
     println!("{}", process("aA"));

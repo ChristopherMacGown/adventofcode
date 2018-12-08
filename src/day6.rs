@@ -2,9 +2,6 @@ use counter::Counter;
 use itertools::Itertools;
 use request::{get, Error};
 use std::collections::HashSet;
-use std::iter::Peekable;
-
-const INPUT: &'static str = "https://adventofcode.com/2018/day/6/input";
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 struct Point((isize, isize));
@@ -39,8 +36,8 @@ impl Point {
     }
 }
 
-pub fn run() -> Result<(), Error> {
-    let input = get(INPUT)?.text()?;
+pub fn run(input: &str) -> Result<(), Error> {
+    let input = get(input)?.text()?;
 
     let points = input.lines().map(Point::from_str).collect::<Vec<Point>>();
     let points_iter = points.iter();

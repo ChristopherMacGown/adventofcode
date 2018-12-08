@@ -1,14 +1,12 @@
 use request::{get, Error};
 use std::collections::HashMap;
 
-const INPUT: &'static str = "https://adventofcode.com/2018/day/1/input";
-
-pub fn run() -> Result<(), Error> {
-    let FREQS = get(INPUT)?.text()?;
+pub fn run(input: &str) -> Result<(), Error> {
+    let input = get(input)?.text()?;
     let mut seen = HashMap::new();
     let mut running = 0;
 
-    for f in FREQS.lines().cycle() {
+    for f in input.lines().cycle() {
         let x = isize::from_str_radix(f, 10).unwrap();
         running += x;
 
@@ -20,7 +18,7 @@ pub fn run() -> Result<(), Error> {
         }
     }
 
-    let frequency: isize = FREQS
+    let frequency: isize = input
         .lines()
         .map(|f| isize::from_str_radix(f, 10).unwrap())
         .sum();

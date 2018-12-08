@@ -2,8 +2,6 @@ use request::{get, Error};
 use std::collections::HashSet;
 use std::iter::Peekable;
 
-const INPUT: &'static str = "https://adventofcode.com/2018/day/3/input";
-
 #[derive(Debug, Copy, Clone, Eq, PartialEq, PartialOrd, Hash)]
 enum ClaimID {
     Id(usize),
@@ -169,9 +167,9 @@ impl Fabric {
     }
 }
 
-pub fn run() -> Result<(), Error> {
+pub fn run(input: &str) -> Result<(), Error> {
     let mut fabric = Fabric::new();
-    let claims = get(INPUT)?.text()?;
+    let claims = get(input)?.text()?;
     claims
         .lines()
         .map(Claim::from_str)

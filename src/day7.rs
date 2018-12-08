@@ -3,8 +3,6 @@ use itertools::Itertools;
 use request::{get, Error};
 use std::collections::{BTreeSet, BinaryHeap, HashMap};
 
-const INPUT: &'static str = "https://adventofcode.com/2018/day/7/input";
-
 type Graph = HashMap<char, Vec<char>>;
 
 fn to_edge(line: &str) -> (char, char) {
@@ -103,8 +101,8 @@ fn walk_graph(graph: &Graph, workers: usize, step: isize) -> (Vec<char>, usize) 
     (completed, tick as usize)
 }
 
-pub fn run() -> Result<(), Error> {
-    let input = get(INPUT)?.text()?;
+pub fn run(input: &str) -> Result<(), Error> {
+    let input = get(input)?.text()?;
     let graph = input
         .lines()
         .map(to_edge)
