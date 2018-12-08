@@ -32,6 +32,7 @@ mod day4;
 mod day5;
 mod day6;
 mod day7;
+mod day8;
 mod request;
 
 type Callback = fn(Lines) -> Result<(), failure::Error>;
@@ -46,6 +47,7 @@ lazy_static! {
         m.insert("5", day5::run as Callback);
         m.insert("6", day6::run as Callback);
         m.insert("7", day7::run as Callback);
+        m.insert("8", day8::run as Callback);
         m
     };
 }
