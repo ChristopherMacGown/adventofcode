@@ -26,30 +26,6 @@ fn edge_to_graph(graph: &mut Graph, parent: char, child: char) {
     }
 }
 
-fn part_one(graph: &Graph) -> String {
-    let mut keys: BTreeSet<char> = graph.keys().cloned().collect();
-    let mut satisfied: BTreeSet<char> = BTreeSet::new();
-    let mut out: Vec<char> = Vec::new();
-
-    while !keys.is_empty() {
-        for key in keys.iter().cloned() {
-            let mut ok = true;
-            if let Some(deps) = graph.get(&key) {
-                ok = deps.iter().all(|d| satisfied.contains(d));
-            }
-
-            if ok {
-                out.push(key);
-                satisfied.insert(key);
-                break;
-            }
-        }
-
-        keys = keys.difference(&satisfied).map(|&c| c).collect();
-    }
-
-    out.iter().collect::<String>()
-}
 
 const ADJUST: isize = 65; // ASCII 'A';
 
@@ -67,28 +43,36 @@ impl PartialOrd for Job {
     }
 }
 
+fn part_one(graph: &Graph) -> String {
+    walk_graph(graph, 1, 0).0.iter().collect::<String>()
+}
+
 fn part_two(graph: &Graph, workers: usize, step: isize) -> usize {
-    let mut completed: BTreeSet<char> = BTreeSet::new();
-    let mut satisfied: BTreeSet<char> = BTreeSet::new();
+    walk_graph(graph, workers, step).1
+}
+
+fn walk_graph(graph: &Graph, workers: usize, step: isize) -> (Vec<char>, usize) {
+    let mut tick = 0;
+    let mut completed: Vec<char> = Vec::new();
+    let mut seen: BTreeSet<char> = BTreeSet::new();
+    let mut queue = BinaryHeap::new();
     let mut ready: BTreeSet<char> = graph
         .iter()
         .filter_map(|(&k, v)| if v.is_empty() { Some(k) } else { None })
         .collect();
-    let mut queue = BinaryHeap::new();
 
-    let mut tick = 0;
     while !(ready.is_empty() && queue.is_empty()) {
         while queue.len() < workers && !ready.is_empty() {
             let job = *ready.iter().next().unwrap();
             let cost = step + (job as isize - ADJUST) + 1;
 
-            satisfied.insert(job);
+            seen.insert(job);
             ready.remove(&job);
             queue.push(Job(job, cost));
         }
 
         let Job(finished, running) = queue.pop().unwrap();
-        completed.insert(finished);
+        completed.push(finished);
         tick += running;
 
         queue = queue.iter()
@@ -97,14 +81,14 @@ fn part_two(graph: &Graph, workers: usize, step: isize) -> usize {
                          if cost > 0 {
                              Some(Job(*job, cost))
                          } else {
-                             completed.insert(*job);
+                             completed.push(*job);
                              None
                          }
                      })
                     .collect();
 
         for key in graph.keys().sorted() {
-            if satisfied.contains(key) {
+            if seen.contains(key) {
                 continue;
             }
 
@@ -116,7 +100,7 @@ fn part_two(graph: &Graph, workers: usize, step: isize) -> usize {
         }
     }
 
-    tick as usize
+    (completed, tick as usize)
 }
 
 pub fn run() -> Result<(), Error> {
@@ -130,7 +114,7 @@ pub fn run() -> Result<(), Error> {
         });
 
     println!("I: {}", part_one(&graph));
-    println!("II: {}", part_two(&graph, 5, 60));
+    println!("II: {:?}", part_two(&graph, 5, 60));
 
     Ok(())
 }
