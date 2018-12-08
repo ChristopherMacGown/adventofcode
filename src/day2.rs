@@ -1,7 +1,8 @@
+use request::Error;
 use levenshtein::levenshtein;
-use request::{get, Error};
+
+use std::str::Lines;
 use std::collections::HashMap;
-use std::str;
 
 fn count_seen_characters(barcode: &str) -> HashMap<char, usize> {
     let mut seen = HashMap::new();
@@ -13,9 +14,8 @@ fn count_seen_characters(barcode: &str) -> HashMap<char, usize> {
     seen
 }
 
-fn checksum(list: &str) -> usize {
+fn checksum(list: Lines) -> usize {
     let checksum = list
-        .lines()
         .map(|l| {
             let mut two = 0;
             let mut three = 0;
@@ -33,13 +33,13 @@ fn checksum(list: &str) -> usize {
     checksum.0 * checksum.1
 }
 
-fn find_levenshtein(list: &str) -> String {
+fn find_levenshtein(list: Lines) -> String {
     let mut first: &str = "";
     let mut second: &str = "";
-    let lines = list.lines();
+    let lines = list.clone();
 
     'outer: for line in lines {
-        let mut offset = list.lines();
+        let mut offset = list.clone();
         offset.next();
 
         'inner: for comparator in offset {
@@ -62,11 +62,9 @@ fn find_levenshtein(list: &str) -> String {
     "FOO".to_string()
 }
 
-pub fn run(input: &str) -> Result<(), Error> {
-    let boxes = get(input)?.text()?;
-
-    println!("CHECKSUM: {}", checksum(&boxes));
-    println!("LEVENSHTEIN: {}", find_levenshtein(&boxes));
+pub fn run(input: Lines) -> Result<(), Error> {
+    println!("CHECKSUM: {}", checksum(input.clone()));
+    println!("LEVENSHTEIN: {}", find_levenshtein(input));
 
     Ok(())
 }

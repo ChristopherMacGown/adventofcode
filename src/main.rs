@@ -17,6 +17,7 @@ extern crate voronoi;
 use itertools::Itertools;
 
 use std::env;
+use std::str::Lines;
 use std::collections::HashMap;
 
 
@@ -33,7 +34,7 @@ mod day6;
 mod day7;
 mod request;
 
-type Callback = fn(&str) -> Result<(), failure::Error>;
+type Callback = fn(Lines) -> Result<(), failure::Error>;
 
 lazy_static! {
     static ref MODMAP: HashMap<&'static str, Callback> = {
@@ -72,9 +73,10 @@ fn get_runner_and_input_url(day: Option<&String>) -> Result<(String, Callback), 
 
 fn main() -> Result<(), failure::Error> {
     let args: Vec<String> = env::args().collect();
-    let (day, func) = get_runner_and_input_url(args.get(1))?;
+    let (input, func) = get_runner_and_input_url(args.get(1))?;
 
-    func(&day)?;
+    func(request::get(&input)?.text()?.lines())?;
+
 
     Ok(())
 }

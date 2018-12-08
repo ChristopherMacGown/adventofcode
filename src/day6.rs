@@ -1,6 +1,7 @@
 use counter::Counter;
 use itertools::Itertools;
-use request::{get, Error};
+use request::Error;
+use std::str::Lines;
 use std::collections::HashSet;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -36,10 +37,8 @@ impl Point {
     }
 }
 
-pub fn run(input: &str) -> Result<(), Error> {
-    let input = get(input)?.text()?;
-
-    let points = input.lines().map(Point::from_str).collect::<Vec<Point>>();
+pub fn run(input: Lines) -> Result<(), Error> {
+    let points = input.map(Point::from_str).collect::<Vec<Point>>();
     let points_iter = points.iter();
 
     let min_x = points_iter

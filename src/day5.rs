@@ -1,5 +1,6 @@
-use request::{get, Error};
+use request::Error;
 use std::iter::Peekable;
+use std::str::Lines;
 
 fn char_matcher(ch: char) -> char {
     if ch.is_uppercase() {
@@ -75,9 +76,10 @@ fn clean_and_process(input: String) -> usize {
         .unwrap()
 }
 
-pub fn run(input: &str) -> Result<(), Error> {
-    let input = get(input)?.text()?;
-    let input = input.trim_end();
+
+pub fn run(input: Lines) -> Result<(), Error> {
+    let mut input = input;
+    let input = input.next().unwrap();
 
     println!("{}", process("aA"));
     println!("{}", process("abBA"));

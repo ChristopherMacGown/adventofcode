@@ -1,4 +1,5 @@
-use request::{get, Error};
+use request::Error;
+use std::str::Lines;
 use std::collections::HashSet;
 use std::iter::Peekable;
 
@@ -167,11 +168,9 @@ impl Fabric {
     }
 }
 
-pub fn run(input: &str) -> Result<(), Error> {
+pub fn run(input: Lines) -> Result<(), Error> {
     let mut fabric = Fabric::new();
-    let claims = get(input)?.text()?;
-    claims
-        .lines()
+    input
         .map(Claim::from_str)
         .filter_map(|c| c.ok())
         .for_each(|c| fabric.insert(&c));

@@ -1,12 +1,12 @@
-use request::{get, Error};
+use request::Error;
 use std::collections::HashMap;
+use std::str::Lines;
 
-pub fn run(input: &str) -> Result<(), Error> {
-    let input = get(input)?.text()?;
+pub fn run(input: Lines) -> Result<(), Error> {
     let mut seen = HashMap::new();
     let mut running = 0;
 
-    for f in input.lines().cycle() {
+    for f in input.clone().cycle() {
         let x = isize::from_str_radix(f, 10).unwrap();
         running += x;
 
@@ -19,7 +19,6 @@ pub fn run(input: &str) -> Result<(), Error> {
     }
 
     let frequency: isize = input
-        .lines()
         .map(|f| isize::from_str_radix(f, 10).unwrap())
         .sum();
 

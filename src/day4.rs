@@ -1,6 +1,8 @@
 use chrono::{NaiveDate, NaiveDateTime, Timelike};
 use counter::Counter;
-use request::{get, Error};
+use request::Error;
+
+use std::str::Lines;
 use std::collections::HashMap;
 
 const DATETIME_FORMAT: &'static str = "[%Y-%m-%d %H:%M";
@@ -40,9 +42,8 @@ impl Record {
     }
 }
 
-pub fn run(input: &str) -> Result<(), Error> {
-    let schedule = get(input)?.text()?;
-    let mut schedule: Vec<Record> = schedule.lines().map(Record::from_str).collect();
+pub fn run(input: Lines) -> Result<(), Error> {
+    let mut schedule: Vec<Record> = input.map(Record::from_str).collect();
     let mut sleeping: HashMap<usize, Counter<i64>> = HashMap::new();
 
     schedule.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));

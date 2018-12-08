@@ -1,6 +1,8 @@
-use std::cmp::Ordering;
+use request::Error;
 use itertools::Itertools;
-use request::{get, Error};
+
+use std::cmp::Ordering;
+use std::str::Lines;
 use std::collections::{BTreeSet, BinaryHeap, HashMap};
 
 type Graph = HashMap<char, Vec<char>>;
@@ -101,10 +103,8 @@ fn walk_graph(graph: &Graph, workers: usize, step: isize) -> (Vec<char>, usize) 
     (completed, tick as usize)
 }
 
-pub fn run(input: &str) -> Result<(), Error> {
-    let input = get(input)?.text()?;
+pub fn run(input: Lines) -> Result<(), Error> {
     let graph = input
-        .lines()
         .map(to_edge)
         .fold(HashMap::new(), |mut g, (parent, child)| {
             edge_to_graph(&mut g, parent, child);
