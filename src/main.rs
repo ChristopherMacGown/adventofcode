@@ -4,8 +4,7 @@ extern crate bindata;
 extern crate bindata_impl;
 extern crate chrono;
 extern crate counter;
-extern crate failure;
-extern crate itertools;
+extern crate failure; extern crate itertools;
 #[macro_use]
 extern crate lazy_static;
 extern crate levenshtein;
@@ -33,6 +32,7 @@ mod day5;
 mod day6;
 mod day7;
 mod day8;
+mod day9;
 mod request;
 
 type Callback = fn(Lines) -> Result<(), failure::Error>;
@@ -48,6 +48,7 @@ lazy_static! {
         m.insert("6", day6::run as Callback);
         m.insert("7", day7::run as Callback);
         m.insert("8", day8::run as Callback);
+        m.insert("9", day9::run as Callback);
         m
     };
 }
