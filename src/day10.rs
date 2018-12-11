@@ -27,6 +27,8 @@ impl Sky {
     fn is_coherent(&self) -> bool {
         let (min_y, max_y) = self.y_extremes();
 
+        // Discovered during development that when all of the motes are coherent
+        // with one another all of the characters in the message are 10 motes high.
         (max_y - min_y + 1) <= 11
     }
 }
