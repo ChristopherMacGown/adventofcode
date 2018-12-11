@@ -1,10 +1,14 @@
 use itertools::{join, Itertools};
 use request::Error;
+use std::collections::HashSet;
 use std::fmt::Result as FmtResult;
 use std::fmt::{Display, Formatter};
-#[allow(unused)]
-use std::iter::Peekable;
 use std::str::Lines;
+
+enum Axis {
+    X,
+    Y,
+}
 
 #[derive(Debug)]
 struct Sky(Vec<Mote>);
@@ -14,18 +18,21 @@ impl Sky {
         self.0.iter_mut().for_each(|m| m.tick())
     }
 
-    fn x_extremes(&self) -> (isize, isize) {
-        let x_positions = self.0.iter().map(|m| m.position.0).sorted();
-        (x_positions[0], x_positions[x_positions.len() - 1])
-    }
+    fn extremes(&self, axis: Axis) -> (isize, isize) {
+        let positions = self
+            .0
+            .iter()
+            .map(|m| match axis {
+                Axis::X => m.position.0,
+                Axis::Y => m.position.1,
+            })
+            .sorted();
 
-    fn y_extremes(&self) -> (isize, isize) {
-        let y_positions = self.0.iter().map(|m| m.position.1).sorted();
-        (y_positions[0], y_positions[y_positions.len() - 1])
+        (positions[0], positions[positions.len() - 1])
     }
 
     fn is_coherent(&self) -> bool {
-        let (min_y, max_y) = self.y_extremes();
+        let (min_y, max_y) = self.extremes(Axis::Y);
 
         // Discovered during development that when all of the motes are coherent
         // with one another all of the characters in the message are 10 motes high.
@@ -35,32 +42,20 @@ impl Sky {
 
 impl Display for Sky {
     fn fmt(&self, f: &mut Formatter) -> FmtResult {
-        let (x_min, x_max) = self.x_extremes();
-        let (y_min, _y_max) = self.y_extremes();
+        let positions: HashSet<Point> = self.0.iter().map(|m| m.position).collect();
+        let (x_min, x_max) = self.extremes(Axis::X);
+        let (y_min, _y_max) = self.extremes(Axis::Y);
 
-        let positions = self.0.iter().map(|m| m.position).unique();
-        let positions = positions.sorted();
-        let mut positions = positions.iter().peekable();
         let mut display: Vec<String> = Vec::new();
 
-        // We rotate it so it's easier to display;
-        for x in x_min..x_max {
+        for y in 0..10 {
             let mut line = Vec::new();
-
-            for y in 0..10 {
-                let mut next = ".";
-
-                if let Some(&&position) = positions.peek() {
-                    let comp = Point(x, y + y_min);
-                    if position == comp {
-                        positions.next();
-                        next = "*";
-                    }
-                }
-                line.push(next);
+            for x in x_min..x_max + 2 {
+                line.push(match positions.contains(&Point(x, y + y_min)) {
+                    false => ".",
+                    true => "*",
+                });
             }
-
-            line.reverse();
 
             display.push(line.concat());
         }
@@ -75,14 +70,6 @@ impl ::std::ops::AddAssign<Point> for Point {
     fn add_assign(&mut self, rhs: Point) {
         self.0 += rhs.0;
         self.1 += rhs.1;
-    }
-}
-
-impl ::std::ops::Mul<isize> for Point {
-    type Output = Point;
-
-    fn mul(self, rhs: isize) -> Point {
-        Point(self.0 * rhs, self.1 * rhs)
     }
 }
 
