@@ -1,7 +1,6 @@
 use request::Error;
-use std::str::Lines;
 use std::collections::VecDeque;
-
+use std::str::Lines;
 
 fn play_game(players: usize, max: usize) -> usize {
     let mut board = VecDeque::with_capacity(max);
@@ -30,44 +29,19 @@ fn play_game(players: usize, max: usize) -> usize {
     *scores.iter().max().unwrap()
 }
 
-
-
 pub fn run(input: Lines) -> Result<(), Error> {
     let (players, max) = input
         .map(|l| l.split(" ").collect::<Vec<&str>>())
-        .map(|l| (l[0].parse::<usize>().unwrap(), l[6].parse::<usize>().unwrap()))
+        .map(|l| {
+            (
+                l[0].parse::<usize>().unwrap(),
+                l[6].parse::<usize>().unwrap(),
+            )
+        })
         .collect::<Vec<(usize, usize)>>()[0];
-
 
     println!("I: {:?}", play_game(players, max));
     println!("II: {:?}", play_game(players, max * 100));
 
     Ok(())
-}
-
-
-mod tests {
-    use super::run;
-
-// : high score is 8317",
-// : high score is 146373",
-// : high score is 2764",
-// : high score is 54718",
-// : high score is 37305",
-
-    #[test]
-    fn test_runner() {
-        let inputs = vec![
-            "5 players; last marble is worth 25 points",
-            "10 players; last marble is worth 1618 points",
-            "13 players; last marble is worth 7999 points",
-            "17 players; last marble is worth 1104 points",
-            "21 players; last marble is worth 6111 points",
-            "30 players; last marble is worth 5807 points",
-        ];
-
-        for input in inputs {
-            run(input.lines());
-        }
-    }
 }

@@ -4,7 +4,8 @@ extern crate bindata;
 extern crate bindata_impl;
 extern crate chrono;
 extern crate counter;
-extern crate failure; extern crate itertools;
+extern crate failure;
+extern crate itertools;
 #[macro_use]
 extern crate lazy_static;
 extern crate levenshtein;
@@ -13,18 +14,16 @@ extern crate reqwest;
 extern crate spade;
 extern crate voronoi;
 
-use itertools::Itertools;
-
+use std::collections::HashMap;
 use std::env;
 use std::str::Lines;
-use std::collections::HashMap;
-
 
 mod assets {
     bindata!("session.cookie");
 }
 
 mod day1;
+mod day10;
 mod day2;
 mod day3;
 mod day4;
@@ -49,6 +48,7 @@ lazy_static! {
         m.insert("7", day7::run as Callback);
         m.insert("8", day8::run as Callback);
         m.insert("9", day9::run as Callback);
+        m.insert("10", day10::run as Callback);
         m
     };
 }
@@ -59,7 +59,14 @@ fn get_runner_and_input_url(day: Option<&String>) -> Result<(String, Callback), 
     }
 
     let map = &MODMAP;
-    let sorted = map.keys().sorted();
+    let mut sorted = map.keys().map(|&k| k).collect::<Vec<&str>>();
+
+    sorted.sort_by(|a, b| {
+        a.parse::<usize>()
+            .unwrap()
+            .cmp(&b.parse::<usize>().unwrap())
+    });
+
     let latest = sorted.last().unwrap();
     let latest_fn = map.get(*latest).unwrap();
 
@@ -67,19 +74,20 @@ fn get_runner_and_input_url(day: Option<&String>) -> Result<(String, Callback), 
         None => (advent_of_code_input_url(latest.to_string()), *latest_fn),
         Some(day) => {
             let day = &**day;
-            
-            (advent_of_code_input_url(day.to_string()), *map.get(day).unwrap_or(latest_fn))
+
+            (
+                advent_of_code_input_url(day.to_string()),
+                *map.get(day).unwrap_or(latest_fn),
+            )
         }
     })
 }
-
 
 fn main() -> Result<(), failure::Error> {
     let args: Vec<String> = env::args().collect();
     let (input, func) = get_runner_and_input_url(args.get(1))?;
 
     func(request::get(&input)?.text()?.lines())?;
-
 
     Ok(())
 }
