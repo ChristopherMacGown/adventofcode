@@ -4,6 +4,7 @@ extern crate bindata;
 extern crate bindata_impl;
 extern crate chrono;
 extern crate counter;
+#[macro_use]
 extern crate failure;
 extern crate itertools;
 #[macro_use]
@@ -24,6 +25,7 @@ mod assets {
 
 mod day1;
 mod day10;
+mod day11;
 mod day2;
 mod day3;
 mod day4;
@@ -49,6 +51,7 @@ lazy_static! {
         m.insert("8", day8::run as Callback);
         m.insert("9", day9::run as Callback);
         m.insert("10", day10::run as Callback);
+        m.insert("11", day11::run as Callback);
         m
     };
 }
